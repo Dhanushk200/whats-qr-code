@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Number to QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #000;
+            color: #fff;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #000;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="text"], textarea {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+            background: #f5f5f5;
+            color: #000;
+        }
+        button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        #qrcode-container {
+            position: relative;
+            margin-top: 20px;
+        }
+        #qrcode {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        #whatsapp-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            display: none; /* Hide icon initially */
+        }
+        .download-btn {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+            margin-top: 20px;
+            display: none; /* Hide button initially */
+        }
+        .download-btn:hover {
+            transform: scale(1.1);
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp Number to QR Code Generator</h1>
+        <form id="whatsappForm">
+            <input type="text" id="phoneNumber" value="+91" placeholder="Enter WhatsApp Number (e.g., +1234567890)">
+            <textarea id="textMessage" placeholder="Enter your message (optional)" rows="4"></textarea>
+            <button type="button" onclick="generateQRCode()">Generate QR Code</button>
+        </form>
+        <div id="qrcode-container">
+            <div id="qrcode"></div>
+            <img id="whatsapp-icon" src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Icon">
+        </div>
+        <button class="download-btn" id="downloadBtn" onclick="downloadQRCode()">Download QR Code</button>
+    </div>
+
+    <script>
+        function generateQRCode() {
+            var phoneNumber = document.getElementById('phoneNumber').value.trim();
+            var textMessage = document.getElementById('textMessage').value.trim();
+            var qrcodeContainer = document.getElementById('qrcode');
+            var whatsappIcon = document.getElementById('whatsapp-icon');
+            var downloadBtn = document.getElementById('downloadBtn');
+            qrcodeContainer.innerHTML = ""; // Clear any previous QR code
+
+            if (!phoneNumber) {
+                alert("Please enter a WhatsApp number.");
+                return;
+            }
+
+            if (!phoneNumber.startsWith('+')) {
+                alert("Please include the country code (e.g., +1234567890).");
+                return;
+            }
+
+            var whatsappUrl = "https://wa.me/" + encodeURIComponent(phoneNumber);
+            if (textMessage) {
+                whatsappUrl += "?text=" + encodeURIComponent(textMessage);
+            }
+
+            new QRCode(qrcodeContainer, {
+                text: whatsappUrl,
+                width: 128,
+                height: 128,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Show the WhatsApp icon on top of the QR code
+            whatsappIcon.style.display = "block";
+
+            // Show the download button
+            downloadBtn.style.display = "inline-block";
+        }
+
+        function downloadQRCode() {
+            var canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                var link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            } else {
+                alert("No QR code to download.");
+            }
+        }
+    </script>
+</body>
+</html>
